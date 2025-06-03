@@ -1,0 +1,226 @@
+Starting with 1.47, changes marked with SYSLINUX/PXELINUX apply to
+that specific program only; other changes apply to both.
+
+Changes in 1.51:
+	* PXELINUX: Not all PXE stacks fill in the IP address for a
+	  type 3 cached info query.  Use a type 2 cached info query
+	  for this information (only.)
+
+Changes in 1.50:
+	* Yet another A20-code update.  It seems some "legacy-free"
+	  machines and embedded gear simply don't have a KBC to talk
+	  to, and that waiting for one will wait forever.  Sigh.
+
+Changes in 1.49:
+	* SYSLINUX: Implement a hack for BIOS drivers which hog significant
+	  chunks of low memory during boot.  (Note: PXELINUX already
+	  had this modification.  SYSLINUX does still require that the
+	  low 512K is available; PXELINUX requires 384K.  Machines
+	  with a physical memory hole in the low 640K cannot boot
+	  Linux no matter what.)  Depending what the reason is for the
+	  memory hole, a new kernel (2.4.0-test3-pre3 or later) may be
+	  required.
+	* SYSLINUX: Default installer binary now compiled against
+	  glibc 2.1.  If this is inappropriate for your system and you
+	  still want to use the offical version of SYSLINUX, please
+	  follow the instructions in "distrib.doc" to rebuild the
+	  installer.
+	* SYSLINUX: Linux installer program now supports -o <offset>
+	  option which does a loopback mount with the
+	  -o loop,offset=<> option.  Useful to run SYSLINUX on an
+	  individual partition of a whole-harddisk image.
+	* Include the source code to a Master Boot Record (MBR)
+	  functionally equivalent to the one installed DOS except it
+	  includes EBIOS support, and should be resistant to geometry
+	  changes.  The MBR code is public domain.
+	* PXELINUX: Fix "double p" bug: if the tftp prefix was null,
+	  all filenames would get a "p" preprended, e.g.
+	  "ppxelinux.cfg" and "pvmlinux".
+
+Changes in 1.48:
+	* PXELINUX: Workaround for PXE ROMs based on the Intel PXE PDK
+	  3.0 build 071 and earlier: missing !PXE structure pointer.
+	* PXELINUX: Handle larger BOOTP/DHCP packages.
+	* PXELINUX: The command line passing was broken; fix.
+	* PXELINUX: Make COMBOOT images work.
+	* PXELINUX: Documentation on how to make booting work using
+	  the PDK 3.0-derived clients, which aren't so generous as to
+	  allow booting with only "PXEClient" specified.
+
+Changes in 1.47:
+	* PXELINUX: RFC 1123 states that a TFTP implementation MUST
+	  use adaptive timeout, "at least an exponential backoff of
+          retransmission timeout is necessary."  Implement a very
+	  simple exponential backoff for retransmits.
+	* PXELINUX: Updated documentation, including pointer to new
+	  TFTP server.
+	* PXELINUX: When sending ERROR due to bad OACK, use the proper
+	  destination port number (why are TFTP port numbers so odd?)
+	* PXELINUX: If the boot dies in the middle somewhere,
+	  eventually give up and reset the machine (unattended
+	  operation.)
+
+Changes in 1.46:
+	* New program PXELINUX to do network booting using a
+	  PXE-compliant (Pre-Execution Environment) network booting
+	  PROM.  See pxelinux.doc for details.
+
+Changes in 1.45:
+	* Serial console support.  See syslinux.doc for details.
+
+Changes in 1.44:
+	* Change HIGHMEM_MAX to 38000000h to (hopefully) avoid the
+	  kernel stepping on it; 3f000000h was apparently a higher
+	  limit than the kernel used!
+
+Changes in 1.43:
+	* Add sys2ansi.pl script to display the contents of a
+	  colorized SYSLINUX file.
+	* Changed the io_delay once again, after a report that the
+	  old delay port causes hangs on some systems.
+
+Changes in 1.42:
+	* Frob the "fast A20 gate" port as well as the keyboard
+	  controller; will this help systems with problems?
+	* Be even more paranoid about A20, unfortunately even this
+	  seems to be not paranoid enough... what I don't understand
+	  is that if there is hardware out there *this broken*, how
+	  can it run Linux at all?  Report an error message rather
+	  than hang forever if A20 is stuck.
+	* Include some intermediate files in the distribution, plus
+	  provide a "make installer" target for distributors to relink
+	  the install programs only.  I would prefer the syslinux boot
+	  loader proper to be "binary clean" for debuggablity -- use
+	  "make clean ; make installer" to rebuild the installers only.
+
+Changes in 1.41:
+	* Don't get confused by directories, volume labels, or VFAT
+	  long names.
+	* Use INT 15h, AX=0E801h to query memory size before trying
+	  INT 15h, AH=88h.  This not only provides more headroom
+	  between the kernel and the initrd on large-memory machines,
+	  but it appears some recent BIOSes actually have started
+	  returning garbage for the AH=88h (older) call.
+	* Trust high memory beyond the 15 MB mark if the user has
+	  specified it, or if obtained with INT 15h, AH=0E801h (with
+	  no memory holes above 1 MB.)
+
+Changes in 1.40:
+	* Increase A20M delay and put in a test to avoid problems on
+	  certain IBM Thinkpads (thanks to Donnie Barnes of RedHat
+	  for vital info on this one.)
+	* Support COMBOOT style boot command images.
+	* Support chain loading (foreign operating systems, e.g. DOS).
+	* Include a new "copybs" DOS utility to copy a boot sector to
+	  a file (under Linux, use "dd".)
+	* Fix the DOS installer to work for disks over 32 MB.
+	* SYSLINUX should now handle disks with more than 65536 tracks.
+
+Changes in 1.37:
+	* Fix a bug that caused "label" statements in syslinux.cfg to
+	  not be handled properly.
+	* Updated the documentation.  Among other things, we now allow
+	  up to 128 "label" statements.
+
+Changes in 1.36:
+	* Fix for booting old (pre-initrd) kernels.
+	* It seems at least some versions of OS/2 doesn't set up all
+	  the fields in the superblock correctly.  Account for that.
+	* Fix bug that caused boot failure when using the mem= option.
+
+Changes in 1.35:
+	* Loading from partitions now should work properly.  (Actually
+	  tested, this time.  You should even be able to dd a floppy
+	  to a partition and boot from it.)
+	* Removed large workaround code for an alleged ancient BIOS
+	  bug I have never actually seen.  The -s option should work
+	  on those machines, anyway.
+	* Support for simple keyboard remappings, same as used by
+	  LILO (once again to support localization.)  The program
+	  keytab-lilo.pl from the LILO distribution included to
+	  generate such maps.
+	* Added a "safe, slow and stupid" (-s) option to the
+	  installers.  This option will lobotomize the boot sector to
+	  hopefully work on even very buggy BIOSes.
+	
+Changes in 1.34:
+	* Ability to load a VGA font on bootup (for localized Linux
+	  distributions.) 
+
+Changes in 1.33:
+	* Bug fix in the Linux installer.
+	* Added a workaround for a bug in certain AMI/Intel BIOSes
+	  when booting from CD-ROM.
+	* Documentation changes.
+
+Changes in 1.32:
+	* FAT16 filesystems are now supported.
+
+Changes in 1.31:
+	* Now compiles under Linux, using NASM, rather than using
+	  Turbo Assembler under DOS.  See http://www.cryogen.com/Nasm
+	  for information about NASM.
+	* Linux-hosted SYSLINUX installer, as well as a
+	  rewritten DOS installer (now is written in assembler, so we
+	  don't need Turbo C.)
+
+Changes in 1.30:
+	* Added support for loading bzImage and initrd loading, and made
+	  SYSLINUX new-setup-code aware (SYSLINUX 1.30 id=0x31).
+	* Added LILO-style kernel labels; see the LABEL and IMPLICIT
+	  keywords in README file.
+	* Added support for colorization of intro and help screens.
+	* The vga= option is now handled correctly.
+	* Massive rewrite of large chunks of the code in order to
+	  support the first two new features.
+
+Changes in 1.20:
+	* Added simple online help at the "boot:" prompt.
+	* Removed 2880K image as I no longer have access to such a
+	  floppy drive.	 (Donations accepted!!)
+	* Decided to distribute the source in a subdirectory rather
+	  than in a nested zipfile.
+
+Changes in 1.11:
+	* Removed a sanity check which would cause booting to fail on
+	  Phoenix BIOS version 4.03.  Apparently this BIOS is buggy.
+
+Changes in 1.10:
+	* Added configuration file SYSLINUX.CFG.  This file contains all
+	  configurable options, and can be edited from any OS which can
+	  access an MS-DOS filesystem; there is no longer a need to run
+	  SYSLINUX.EXE except to write the boot sector.
+	* Default command line now given by "default" line in config
+	  file.
+	* LINUXMSG.TXT and BOOTMSG.TXT hard-coded file names replaced by
+	  "display" and "prompt" lines in config file.
+	* LILO-style option appending now supported ("append" line in
+	  config file).
+	* Prompt timeout is now supported ("timeout" line in config
+	  file).  The timeout is cancelled when anything is typed on the
+	  command line.
+	* Pressing <ESC> or <Ctrl-C> at the Loading... stage now aborts
+	  the kernel loading in progress and returns the user to the
+	  boot: prompt.
+	* The installer now automatically sets the READONLY flag on
+	  LDLINUX.SYS.
+	* Added 2880K disk image.
+
+Changes in 1.03:
+	* Fixed bug that would prevent booting from double-density
+	  floppies and other DOS filesystems with multiple sectors per
+	  cluster.
+	* Added 720K disk image.
+	* Changed default kernel name on disk images to LINUX.
+
+Changes in 1.02:
+	* Fixed bug that would garble the command line on recent kernels
+	  with more than 4 sectors of setup code (this wasn't really a
+	  *bug*; rather, a kernel change broke the code.  Unfortunately
+	  the Linux boot interface is still sorely undocumented).
+	* Added BOOTMSG.TXT file support (message file which does not
+	  force display of the boot prompt).
+
+Changes in 1.01:
+	* Fixed bug on some (most?) 386 BIOSes would require two boot
+	  attempts.
