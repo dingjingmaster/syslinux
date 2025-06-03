@@ -18,11 +18,18 @@ operates off an MS-DOS/Windows FAT filesystem.  It is intended to
 simplify first-time installation of Linux, and for creation of rescue-
 and other special-purpose boot disks.
 
+SYSLINUX 是 Linux 操作系统的引导加载器，它可以在 MS-DOS/Windows FAT 文件系统上运行。
+它通过 MS-DOS/Windows FAT 文件系统运行。
+它的目的是简化 Linux 的首次安装，以及创建救援和其他特殊用途的启动盘。
+
 SYSLINUX can be used, when properly set up, completely eliminate the
 need for distribution of raw diskette images for boot floppies.  A
 SYSLINUX floppy can be manipulated using standard MS-DOS (or any other
 OS that can access an MS-DOS filesystem) tools once it has been
 created.
+
+如果设置得当，SYSLINUX 可以完全消除分发原始软盘映像作为启动软盘的需要。
+SYSLINUX 软盘一经创建，就可以使用标准的 MS-DOS（或其他可以访问 MS-DOS 文件系统的操作系统）工具进行操作。
 
 
    ++++ WHAT SYSLINUX IS NOT ++++
@@ -34,9 +41,14 @@ another boot loader (e.g. LILO) is probably more suitable.  In a
 system which actually contains DOS or Windows, LOADLIN may be simpler
 to use.
 
+SYSLINUX 可能不适合作为通用引导加载器。它只能从 FAT 文件系统引导 Linux，而不是 ext2。
+由于本地 Linux 实现通常会使用 ext2，所以另一个引导加载器（如 LILO）可能更合适。 
+在实际包含 DOS 或 Windows 的系统中，使用 LOADLIN 可能更简单。
+
 However, SYSLINUX has shown itself to be quite useful in a number of
 special-purpose applications.
 
+不过，SYSLINUX 在一些特殊用途的应用中显示出了自己的实用性。
 
    ++++ CREATING A BOOTABLE LINUX FLOPPY +++
 
@@ -44,18 +56,26 @@ In order to create a bootable Linux floppy using SYSLINUX, prepare a
 normal MS-DOS formatted floppy.  Copy one or more Linux kernel files to
 it, then execute the DOS command:
 
-        syslinux [-s] a:
+         syslinux [-s] a:
+
+要使用 SYSLINUX 创建可启动的 Linux 软盘，请准备一张 MS-DOS 格式的普通软盘。
+将一个或多个 Linux 内核文件复制到软盘上，然后执行 DOS 命令：
+         syslinux [-s] a:
 
 (or whichever drive letter is appropriate; the [] meaning -s is optional) 
+(或任何合适的驱动器盘符；[] 表示 -s 是可选项）
 
 or the Linux command:
 
 	syslinux [-s] [-o offset] /dev/fd0
 
 (or, again, whichever device is the correct one.)
+(或者，还是以正确的设备为准）。
 
 This will alter the boot sector on the disk and copy a file named
 LDLINUX.SYS into its root directory.
+
+这将更改磁盘上的引导扇区，并将名为 LDLINUX.SYS 的文件复制到其根目录。
 
 The -s option, if given, will install a "safe, slow and stupid"
 version of SYSLINUX.  This version may work on some very buggy BIOSes
@@ -64,17 +84,30 @@ which the -s option is required to make it boot reliably, please send
 as much info about your machine as you can, and include the failure
 mode.
 
+如果给出 -s 选项，则将安装一个 “安全、缓慢、愚蠢 ”的版本的 SYSLINUX。
+该版本可能会在一些 BIOS 存在严重漏洞的机器上运行，否则 SYSLINUX 将无法运行。
+如果你发现有机器需要使用 -s 选项才能可靠启动，请尽可能多地发送有关机器的信息，包括故障模式。
+
 The -o option is used with a disk image file and specifies the byte
 offset of the filesystem image in the file.
+
+-o选项用于磁盘镜像文件，指定文件系统镜像在文件中的字节偏移量。
 
 WARNING: There seems to be a bug in some recent experimental Linux
 	 kernels that causes floppy disk corruption when using the
 	 Linux syslinux installer.  This bug exists in kernels
 	 2.1.79-2.1.86; as far as I know the bug is fixed in 2.1.87.
 
+警告：最近的一些实验性 Linux 	 内核中似乎存在一个错误，当使用
+   Linux syslinux 安装程序时会导致软盘损坏。
+   这个错误存在于内核 2.1.79-2.1.86；据我所知，2.1.87 已经修复了这个错误。
+
 On boot time, by default, the kernel will be loaded from the image named
 LINUX on the boot floppy.  This default can be changed, see the section
 on the SYSLINUX config file.
+
+默认情况下，启动时将从引导软盘上名为 LINUX 的映像加载内核。
+默认值可以更改，请参阅 SYSLINUX 配置文件部分。
 
 If the Shift or Alt keys are held down during boot, or the Caps or Scroll
 locks are set, SYSLINUX will display a LILO-style "boot:" prompt.  The
@@ -82,6 +115,9 @@ user can then type a kernel file name followed by any kernel parameters.
 The SYSLINUX loader does not need to know about the kernel file in
 advance; all that is required is that it is a file located in the root
 directory on the disk.
+
+如果在启动过程中按住 Shift 或 Alt 键，或者设置了大写或滚动锁，SYSLINUX 将显示 LILO 风格的 “boot: ”提示。
+用户可以键入内核文件名，然后输入内核参数。SYSLINUX 加载器不需要事先知道内核文件，只需要知道它是位于磁盘根目录下的文件即可。
 
 
    ++++ CONFIGURATION FILE ++++
@@ -91,6 +127,9 @@ file called SYSLINUX.CFG in the root directory of the boot floppy.  This
 is a text file in either UNIX or DOS format, containing one or more of
 the following items (case is insensitive for keywords; upper case is used
 here to indicate that a word should be typed verbatim):
+
+通过在启动软盘的根目录下放置一个名为 SYSLINUX.CFG 的文件，可以更改 SYSLINUX 中所有可配置的默认值。
+这是一个 UNIX 或 DOS 格式的文本文件，包含以下一项或多项内容（关键字不区分大小写；此处使用大写表示应逐字输入）：
 
 DEFAULT kernel options...
         Sets the default command line.  If SYSLINUX boots automatically,
@@ -102,12 +141,22 @@ DEFAULT kernel options...
         present in the config file, the default is kernel name "linux",
         with no options.
 
+        设置默认命令行。如果 SYSLINUX 自动启动、就像在 “boot: ”提示符下输入 DEFAULT 后面的项目一样。
+        选项 “auto”，表示自动启动。选项，表示自动启动。
+
+        如果没有配置文件，或配置文件中没有 DEFAULT 项内核名称为 “linux”、不带任何选项。
+
 APPEND options...
         Add one or more options to the kernel command line.  These are
         added both for automatic and manual boots.  The options are
         added at the very beginning of the kernel command line,
         usually permitting explicitly entered kernel options to override
         them.  This is the equivalent of the LILO "append" option.
+
+        在内核命令行中添加一个或多个选项。
+        这些选项为自动启动和手动启动添加。
+        这些选项添加在内核命令行的开头、通常允许明确输入的内核选项覆盖这些选项。选项。
+        这相当于 LILO 的 “附加 ”选项。
 
 LABEL label
   KERNEL image
@@ -119,6 +168,13 @@ LABEL label
         The default for "image" is the same as "label", and if no
         APPEND is given the default is to use the global entry (if any).
         Up to 128 LABEL entries are permitted.
+
+        如果输入 “label ”作为要启动的内核、SYSLINUX应启动 “image”，并使用指定的 APPEND 选项，
+        而不是在文件的全局部分（第一条 LABEL 命令之前）指定的选项。
+        全局部分（第一条 LABEL 命令之前）指定的选项。
+        默认情况下，“image ”与 “label ”相同。
+        APPEND 则默认使用全局条目（如果有）。
+        最多允许 128 个 LABEL 条目。
 
         Note that LILO uses the syntax:
         image = mykernel
@@ -137,13 +193,19 @@ LABEL label
 		The "image" doesn't have to be a Linux kernel; it can
 		be a boot sector or a COMBOOT file (see below.)
 
+      "image" 不一定是 Linux 内核，也可以是引导扇区或 COMBOOT 文件（见下文）。
+
   APPEND -
         Append nothing.  APPEND with a single hyphen as argument in a
         LABEL section can be used to override a global APPEND.
+        不追加任何内容。以单个连字符作为参数的 APPEND 在 可以用来覆盖全局 APPEND。
 
 IMPLICIT flag_val
         If flag_val is 0, do not load a kernel image unless it has been
         explicitly named in a LABEL statement.  The default is 1.
+
+        如果 flag_val 为 0，则不加载内核映像，除非该映像已在 LABEL 语句中明确命名。
+        在 LABEL 语句中明确命名。默认值为 1。
 
 TIMEOUT timeout
         Indicates how long to wait at the boot: prompt until booting
@@ -152,6 +214,9 @@ TIMEOUT timeout
         being that the user will complete the command line already
         begun.  A timeout of zero will disable the timeout completely,
         this is also the default.
+
+        超时将在用户在键盘上输入任何内容后立即取消，假设用户将完成已开始的命令行。
+        超时为零将完全禁用超时，这也是默认设置。
 
         NOTE: The maximum possible timeout value is 35996; corresponding to
         just below one hour.
@@ -162,8 +227,13 @@ SERIAL port [baudrate]
 	omitted, the baud rate defaults to 9600 bps.  The serial
 	parameters are hardcoded to be 8 bits, no parity, 1 stop bit.
 
+   启用串行端口作为控制台。 “端口 “是一个数字（0 = /dev/ttyS0 = COM1 等）；
+   如果省略 ”波特率"，波特率默认为 9600 bps。串行参数被硬编码为 8 位、无奇偶校验、1 停止位。
+
 	For this directive to be guaranteed to work properly, it
 	should be the first directive in the configuration file.
+
+   为保证该指令正常工作，它应是配置文件中的第一条指令。
 
 FONT filename
 	Load a font in .psf format before displaying any output
@@ -192,6 +262,9 @@ DISPLAY filename
         the LINUXMSG.TXT and BOOTMSG.TXT files in SYSLINUX 1.0.  Please
         see the section below on DISPLAY files.
 
+        在启动时（如果显示引导：提示符，则在该提示符之前）在屏幕上显示指定文件。引导：提示符之前）。
+        该选项取代 SYSLINUX 1.0 中的 LINUXMSG.TXT 和 BOOTMSG.TXT 文件。请参阅下面有关 DISPLAY 文件的章节。
+
         NOTE: If the file is missing, this option is simply ignored.
 
 PROMPT flag_val
@@ -200,6 +273,10 @@ PROMPT flag_val
         default).  If flag_val is 1, always display the boot: prompt.  This
         option takes the place of testing for the LINUXMSG.TXT file in
         SYSLINUX 1.0.
+
+        如果 flag_val 为 0，则仅在按下 Shift 或 Alt 键，或设置了大写锁定或滚动锁定（这是默认值）。
+        如果 flag_val 为 1，则始终显示 boot: 提示。该选项代替了 SYSLINUX 1.0 中的 LINUXMSG.TXT 文件测试。
+        SYSLINUX 1.0 中对 LINUXMSG.TXT 文件的测试。
 
 F1 filename
 F2 filename
@@ -214,6 +291,12 @@ F0 filename
         file names to F11 and F12.  Please see the section below on
         DISPLAY files.
 
+        当在引导：提示符下按下功能键时，屏幕上会显示指定文件。
+        在引导：提示符下按下功能键时，屏幕上会显示指定文件。
+        请注意，F10 必须在配置文件中输入 “F0”，而不是 “F10”，
+        而且目前还无法将文件名与 F11 和 F12 绑定。
+        请参阅下面有关 DISPLAY 文件的章节。
+
 	When using the serial console, press <Ctrl-F><digit> to get to
 	the help screens, e.g. <Ctrl-F><2> to get to the F2 screen,
 	and <Ctrl-F><0> for the F10 one.
@@ -221,9 +304,13 @@ F0 filename
 In the configuration file blank lines and comment lines beginning
 with a hash mark (#) are ignored.
 
+配置文件中的空行和以散列符号 (#) 开头的注释行将被忽略。
+
 Note that the configuration file is not completely decoded.  Syntax
 different from the one described above may still work correctly in this
 version of SYSLINUX, but may break in a future one.
+
+请注意，配置文件并未完全解码。与上述语法不同的语法在此版本的 SYSLINUX 中仍可正常工作，但在未来版本中可能会被破解。
 
 
    ++++ LARGE KERNELS AND INITIAL RAMDISK SUPPORT ++++
@@ -232,6 +319,8 @@ This version of SYSLINUX supports large kernels (bzImage format),
 eliminating the 500K size limit of the zImage kernel format.  bzImage
 format kernels are detected automatically and handled transparently to
 the user.
+
+该版本的 SYSLINUX 支持大型内核（bzImage 格式），消除了 zImage 内核格式的 500K 大小限制。
 
 This version of SYSLINUX also supports a boot-time-loaded ramdisk
 (initrd).  An initrd is loaded from a DOS file if the option
@@ -243,6 +332,13 @@ precedence; this permits user-entered options to override a config
 file APPEND.  Specifying "initrd=" without a filename inhibits initrd
 loading.  The file specified by the initrd= option will typically be a
 gzipped filesystem image.
+
+该版本的 SYSLINUX 还支持启动时加载的内存盘（initrd）。
+如果 “initrd=filename”（这里的 filename 是 initrd 映像的文件名；该文件必须位于引导软盘的根目录下）
+选项出现在处理过的命令行中（在添加 APPEND 等之后），initrd 就会从 DOS 文件中加载。
+如果存在多个 initrd 选项，则最后一个优先；这允许用户输入的选项优先于配置文件 APPEND。
+指定 “initrd=” 而不指定文件名会抑制 initrd 加载。
+initrd= 选项指定的文件通常是 gzip 文件系统映像。
 
 NOTE: One of the main advantages with SYSLINUX is that it makes it
 very easy to support users with new or unexpected configurations,
@@ -257,6 +353,9 @@ To bzImage and recent zImage kernels, SYSLINUX 1.30 and higher will
 identify using the ID byte 0x31.  PXELINUX identifies using the ID
 byte 0x32.  The ID range 0x33-0x3f is reserved for future versions of
 SYSLINUX.
+
+对于 bzImage 和最近的 zImage 内核，SYSLINUX 1.30 及更高版本将使用 ID 字节 0x31 进行识别。
+PXELINUX 使用 ID 字节 0x32 进行识别。ID 范围 0x33-0x3f 保留给未来版本的 SYSLINUX。
 
 
    ++++ DISPLAY FILE FORMAT ++++

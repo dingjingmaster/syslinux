@@ -16,7 +16,7 @@
 #
 
 NASM	= nasm
-CC	= gcc
+CC		= gcc
 CFLAGS	= -Wall -O2 -fomit-frame-pointer
 LDFLAGS	= -O2 -s
 
